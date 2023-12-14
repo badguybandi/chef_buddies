@@ -1,62 +1,63 @@
-const { AzureFunction, Context } = require('@azure/functions');
-const { CosmosClient } = require('@azure/cosmos');
+const { Context } = require('@azure/functions');
+const { Connection, Request } = require('tedious');
 
-const endpoint = 'YOUR_COSMOS_DB_ENDPOINT';
-const key = 'YOUR_COSMOS_DB_KEY';
-const databaseId = 'ChefBuddiesDB';
-const containerIdUsers = 'Users';
-const containerIdSessions = 'Sessions';
-
-const cosmosClient = new CosmosClient({ endpoint, key });
+const config = {
+    server: 'chefbuddiesserver.database.windows.net',
+    authentication: {
+        type: 'default',
+        options: {
+            userName: 'chefbuddiesserver',
+            password: '123chefCHEF',
+        },
+    },
+    options: {
+        encrypt: true,
+        database: 'ChefBuddiesDatabase',
+        rowCollectionOnDone: true,
+        useColumnNames: false,
+    },
+};
 
 module.exports = async function (context, req) {
     const { email, password } = req.body;
 
-    try {
-        const user = await getUserByEmail(email);
+    const connection = new Connection(config);
 
-        if (user && user.password === password) {
-            const sessionId = generateSessionId();
-            await createSession(sessionId, user.user_id);
-
+    connection.on('connect', (err) => {
+        if (err) {
             context.res = {
-                status: 200,
-                body: { message: "Login successful", sessionId },
+                status: 500,
+                body: { message: "Error connecting to the database" },
             };
-        } else {
-            context.res = {
-                status: 401,
-                body: { message: "Invalid credentials" },
-            };
+            context.done();
+            return;
         }
-    } catch (error) {
-        console.error('Error:', error);
-        context.res = {
-            status: 500,
-            body: { message: "Internal server error" },
-        };
-    }
+
+        const request = new Request(`SELECT * FROM Users WHERE email  = '${email}' AND password = '${password}'`, (err, rowCount, rows) => {
+            if (err) {
+                context.res = {
+                    status: 500,
+                    body: { message: "Error querying the database" },
+                };
+            } else {
+                if (rowCount > 0) {
+                    context.res = {
+                        status: 200,
+                        body: { message: "Login successful" },
+                    };
+                } else {
+                    context.res = {
+                        status: 401,
+                        body: { message: "Invalid credentials" },
+                    };
+                }
+            }
+
+            context.done();
+        });
+
+        connection.execSql(request);
+    });
+
+    connection.connect();
 };
-
-async function getUserByEmail(email) {
-    const { resources: users } = await cosmosClient
-        .database(databaseId)
-        .container(containerIdUsers)
-        .items.query(SELECT * FROM c WHERE c.email = "${email}")
-        .fetchAll();
-
-    return users[0];
-}
-
-async function createSession(sessionId, userId) {
-    await cosmosClient
-        .database(databaseId)
-        .container(containerIdSessions)
-        .items.create({ session_id: sessionId, user_id: userId });
-}
-
-function generateSessionId() {
-    // Implement your session ID generation logic here
-    return Math.random().toString(36).substring(2, 15);
-}
-

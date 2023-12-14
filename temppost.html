@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Post - Social Network</title>
+    <style>
+        body {
+            background-color: lightblue;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .header {
+            background-color: #fff;
+            color: lightblue;
+            text-align: center;
+            padding: 20px;
+            font-size: 24px;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            background-color: #fff;
+            color: lightblue;
+            padding: 10px;
+            align-items: center;
+        }
+
+        .tabs {
+            display: flex;
+        }
+
+        .tab {
+            color: lightblue;
+            cursor: pointer;
+            padding: 10px;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            margin-right: 20px;
+        }
+
+        .landing-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 20px;
+        }
+
+        #create-post-form {
+            width: 100%;
+            max-width: 600px;
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        input,
+        textarea {
+            margin: 10px 0;
+            padding: 10px;
+            width: 100%;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            background-color: lightblue;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #135093;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="navbar">
+            <img src="logo.png" alt="Social Network Logo" class="logo">
+            <div class="tabs">
+                <div class="tab">Home</div>
+                <div class="tab">Tab 1</div>
+                <div class="tab">Tab 2</div>
+                <div class="tab">Tab 3</div>
+            </div>
+        </div>
+    </div>
+    <div class="landing-container">
+        <form id="create-post-form">
+            <label for="post-title">Post Title:</label>
+            <input type="text" id="post-title" name="post-title" required>
+
+            <label for="post-content">Post Content:</label>
+            <textarea id="post-content" name="post-content" rows="4" required></textarea>
+
+            <label for="media-upload">Upload Pictures or Videos:</label>
+            <input type="file" id="media-upload" name="media-upload" accept="image/*, video/*">
+
+            <button type="button" onclick="createPost()">Create Post</button>
+        </form>
+    </div>
+
+    <script>
+        function createPost() {
+            const postTitle = document.getElementById('post-title').value;
+            const postContent = document.getElementById('post-content').value;
+
+            // Check if a file is selected
+            const mediaUpload = document.getElementById('media-upload');
+            const mediaFile = mediaUpload.files[0];
+
+            // Implement logic to handle the post creation with media
+            alert(`Post created!\nTitle: ${postTitle}\nContent: ${postContent}\nMedia: ${mediaFile ? mediaFile.name : 'No media'}`);
+        }
+    </script>
+</body>
+</html>

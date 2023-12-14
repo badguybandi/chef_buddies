@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chef Buddies</title>
+    <title>Chef Buddies - Create Account</title>
     <style>
         body {
             background-color: lightblue;
@@ -26,7 +26,7 @@
             margin-bottom: 20px;
         }
 
-        #login-form {
+        #signup-form {
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -53,7 +53,7 @@
             background-color: #f0f0f0;
         }
 
-        #forgot-password {
+        #login-link {
             margin-top: 10px;
             font-size: 12px;
             color: white;
@@ -64,11 +64,14 @@
 <body>
     <div class="landing-container">
         <img src="logo.png" alt="Chef Buddies Logo" class="logo">
-        <form id="login-form">
+        <form id="signup-form">
+            <input type="text" id="firstname" placeholder="First Name">
+            <input type="text" id="lastname" placeholder="Last Name">
+            <input type="date" id="birthday" name="birthday">
             <input type="email" id="email" placeholder="Email">
             <input type="password" id="password" placeholder="Password">
-            <button type="button" onclick="login()">Login</button>
-            <p id="forgot-password" onclick="forgotPassword()">Forgot  your password? Click here to reset.</p>
+            <button type="button" onclick="createAccount()">Create Account</button>
+            <p id="login-link" onclick="redirectToLogin()">Already have an account? Click here to login.</p>
         </form>
         <div class="chatbot-container">
             <!-- Chatbot implementation goes here -->
@@ -76,21 +79,22 @@
     </div>
 
     <script>
-        function login() {
+        function createAccount() {
+            const fullname = document.getElementById('fullname').value;
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
 
-            // Make a POST request to the Azure Function endpoint
-            fetch('YOUR_AZURE_FUNCTION_URL/login', {
+            // Make a POST request to the Azure Function endpoint for account creation
+            fetch('YOUR_AZURE_FUNCTION_URL_FOR_SIGNUP', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ email, password }),
+                body: JSON.stringify({ fullname, email, password }),
             })
             .then(response => response.json())
             .then(data => {
-                // Handle the response from the server
+                // Handle the response from the server (e.g., display a success message)
                 alert(data.message);
             })
             .catch(error => {
@@ -98,11 +102,11 @@
             });
         }
 
-        function forgotPassword() {
-            // Implement password reset logic or link to the reset page
-            alert("Forgot password clicked. Implement the reset logic here.");
+        function redirectToLogin() {
+            // Implement logic to redirect the user to the login page
+            alert("Redirecting to login page. Implement the redirection logic here.");
         }
     </script>
 </body>
 </html>
-
+``
